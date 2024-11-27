@@ -1,60 +1,115 @@
-import React, { useState, useEffect } from 'react';
-import Image from './Image'; // Import component Image
-
-interface Slide {
-  id: number;
-  imageUrl: string;
-  title: string;
-}
+import React, { useState } from 'react';
 
 interface SlideshowProps {
-  slides: Slide[];
-  interval?: number;
-  className?: string;
+  images: { src: string; alt: string }[];
 }
 
-const Slideshow: React.FC<SlideshowProps> = ({ slides, interval = 5000, className = '' }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+const Slideshow: React.FC<SlideshowProps> = ({ images }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
+  const nextSlide = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
-  useEffect(() => {
-    const slideInterval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, interval);
-    return () => clearInterval(slideInterval);
-  }, [interval, slides.length]);
+  const prevSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
 
   return (
-    <div className={`relative w-[936px] h-[234px] bg-gray-200 ${className} rounded-t-lg overflow-hidden`}>
-      {slides.map((slide, index) => (
+    <div
+      style={{
+        width: '100%',
+        height: '300px',
+        overflow: 'hidden',
+        position: 'relative',
+        backgroundColor: '#f3f4f6',
+      }}
+    >
+      {images.length > 0 ? (
+        <img
+          src={images[currentIndex].src}
+          alt={images[currentIndex].alt}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+        />
+      ) : (
         <div
-          key={slide.id}
-          className={`absolute w-full h-full transition-opacity duration-1000 ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
-          }`}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            color: '#999',
+          }}
         >
-          {/* Thay thế thẻ <img> bằng <Image> */}
-          <Image
-            src={slide.imageUrl}
-            alt={slide.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute bottom-0 bg-black bg-opacity-50 text-white p-2">
-            {slide.title}
-          </div>
+          Không có hình ảnh
         </div>
-      ))}
+      )}
 
-      {/* Nút tròn nhỏ ở dưới */}
-      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-        {slides.map((_, index) => (
+      {/* Nút điều hướng */}
+      <button
+        onClick={prevSlide}
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '16px',
+          transform: 'translateY(-50%)',
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          border: 'none',
+          borderRadius: '50%',
+          width: '40px',
+          height: '40px',
+          cursor: 'pointer',
+        }}
+      >
+        &#8592;
+      </button>
+      <button
+        onClick={nextSlide}
+        style={{
+          position: 'absolute',
+          top: '50%',
+          right: '16px',
+          transform: 'translateY(-50%)',
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          border: 'none',
+          borderRadius: '50%',
+          width: '40px',
+          height: '40px',
+          cursor: 'pointer',
+        }}
+      >
+        &#8594;
+      </button>
+
+      {/* Pagination */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '16px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: '8px',
+        }}
+      >
+        {images.map((_, index) => (
           <button
             key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full ${index === currentSlide ? 'bg-white' : 'bg-gray-400'} focus:outline-none`}
+            onClick={() => setCurrentIndex(index)}
+            style={{
+              width: '12px',
+              height: '12px',
+              borderRadius: '50%',
+              backgroundColor: currentIndex === index ? '#333' : '#ccc',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           />
         ))}
       </div>
@@ -63,3 +118,4 @@ const Slideshow: React.FC<SlideshowProps> = ({ slides, interval = 5000, classNam
 };
 
 export default Slideshow;
+
