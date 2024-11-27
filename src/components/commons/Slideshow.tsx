@@ -1,121 +1,55 @@
 import React, { useState } from 'react';
+import Button from './Button'; // Sử dụng Button.tsx bạn tải lên
+import Image from './Image';   // Sử dụng Image.tsx bạn tải lên
 
-interface SlideshowProps {
-  images: { src: string; alt: string }[];
+interface Slide {
+  src: string;
+  alt: string;
 }
 
-const Slideshow: React.FC<SlideshowProps> = ({ images }) => {
+interface SlideShowProps {
+  slides: Slide[];
+}
+
+const SlideShow: React.FC<SlideShowProps> = ({ slides }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : slides.length - 1));
   };
 
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex < slides.length - 1 ? prevIndex + 1 : 0));
+  };
+
+  const handleDotClick = (index: number) => {
+    setCurrentIndex(index);
   };
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '300px',
-        overflow: 'hidden',
-        position: 'relative',
-        backgroundColor: '#f3f4f6',
-      }}
-    >
-      {images.length > 0 ? (
-        <img
-          src={images[currentIndex].src}
-          alt={images[currentIndex].alt}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-          }}
-        />
-      ) : (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            color: '#999',
-          }}
-        >
-          Không có hình ảnh
-        </div>
-      )}
-
-      {/* Nút điều hướng */}
-      <button
-        onClick={prevSlide}
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '16px',
-          transform: 'translateY(-50%)',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          border: 'none',
-          borderRadius: '50%',
-          width: '40px',
-          height: '40px',
-          cursor: 'pointer',
-        }}
-      >
-        &#8592;
-      </button>
-      <button
-        onClick={nextSlide}
-        style={{
-          position: 'absolute',
-          top: '50%',
-          right: '16px',
-          transform: 'translateY(-50%)',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          border: 'none',
-          borderRadius: '50%',
-          width: '40px',
-          height: '40px',
-          cursor: 'pointer',
-        }}
-      >
-        &#8594;
-      </button>
-
-      {/* Pagination */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '16px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          gap: '8px',
-        }}
-      >
-        {images.map((_, index) => (
-          <button
+    <div className="slideshow">
+      <div className="slideshow-container">
+        {/* Hiển thị hình ảnh bằng Image.tsx */}
+        <Image src={slides[currentIndex].src} alt={slides[currentIndex].alt} />
+        {/* Nút điều hướng */}
+        <Button onClick={handlePrev} className="prev-btn">
+          &#8249;
+        </Button>
+        <Button onClick={handleNext} className="next-btn">
+          &#8250;
+        </Button>
+      </div>
+      <div className="dots">
+        {slides.map((_, index) => (
+          <span
             key={index}
-            onClick={() => setCurrentIndex(index)}
-            style={{
-              width: '12px',
-              height: '12px',
-              borderRadius: '50%',
-              backgroundColor: currentIndex === index ? '#333' : '#ccc',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          />
+            className={`dot ${index === currentIndex ? 'active' : ''}`}
+            onClick={() => handleDotClick(index)}
+          ></span>
         ))}
       </div>
     </div>
   );
 };
 
-export default Slideshow;
-
+export default SlideShow;

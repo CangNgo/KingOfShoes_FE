@@ -1,17 +1,19 @@
-import React from "react";
-import ProductCard from "./components/commons/ProductCard";
+import React from 'react';
+import SlideShow from './components/commons/Slideshow';
 
-const App = () => {
+const App: React.FC = () => {
+  const slides = [
+    { src: 'https://via.placeholder.com/800x400?text=Slide+1', alt: 'Slide 1' },
+    { src: 'https://via.placeholder.com/800x400?text=Slide+2', alt: 'Slide 2' },
+    { src: 'https://via.placeholder.com/800x400?text=Slide+3', alt: 'Slide 3' },
+  ];
+
   return (
-    <div className="App">
-      <header className="text-center text-2xl font-bold my-6">
-        Product Catalog
-      </header>
-      <ProductCard />
+    <div>
+      <h1>SlideShow Demo</h1>
+      <SlideShow slides={slides} />
     </div>
   );
 };
 
 export default App;
-
-

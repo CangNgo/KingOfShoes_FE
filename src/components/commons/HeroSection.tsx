@@ -1,5 +1,5 @@
 import React from 'react';
-import Slideshow from './Slideshow';
+import Slideshow from './SlideShow';
 import ReusableNavBar from './ReusableNavBar';
 import { slideshowImages } from './SlideshowImages';
 import NavItems from './NavItems';
