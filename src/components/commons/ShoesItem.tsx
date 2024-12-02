@@ -1,6 +1,8 @@
 import React from "react";
 import Image from "./Image";
+import useFormatCurrency from "../../hooks/useFormatCurrency";
 interface ProdcutPtops {
+  id: string;
   title: string;
   description?: string;
   image: string;
@@ -11,9 +13,11 @@ interface ProdcutPtops {
   small?: boolean;
   medium?: boolean;
   large?: boolean;
-  onclick?: () => void;
+  price?: number
+  onclick: (id: string) => void;
 }
 function ShoesItem({
+  id,
   title,
   description,
   image,
@@ -24,9 +28,11 @@ function ShoesItem({
   classesImg,
   classesTitle = " text-md w-full text-center",
   classesDescription = "  text-md w-full text-center",
+  price = 0, 
+  onclick
 }: ProdcutPtops) {
   //điều chỉnh props
-
+const priceItem = useFormatCurrency(price)
   //size small
   if (small) {
     classes += " w-16 text-small mr-4";
@@ -44,17 +50,21 @@ function ShoesItem({
   }
 
   if (large) {
-    classes += " w-44 text-small mr-4";
-    classesImg += " w-full rounded-2xl pt-2";
-    classesTitle += " text-lg whitespace-normal break-words line-clamp-1";
+    classes += " w-44 h-56 text-small mr-4";
+    classesImg += " w-full h-full object-cover rounded-2xl pt-2";
+    classesTitle += " text-base whitespace-normal break-words line-clamp-1";
     classesDescription += " text-sm whitespace-normal break-words line-clamp-2";
   }
 
+  console.log("shoes item: ", image);
+  
+
   return (
-    <div className={classes + " flex flex-col items-center font-medium "}>
-      <Image src={image} className={classesImg} />
+    <div className={classes + " w-32 flex flex-col items-center cursor-pointer justify-center"} onClick={() => {onclick(id)}}>
+      <div className="w-full h-40"><Image src={image} className={classesImg} /></div>
       <div className={classesTitle}>{title}</div>
       <div className={classesDescription}>{description}</div>
+      {large && (<div className="text-red-400 font-bold">{priceItem}</div>)}
     </div>
   );
 }

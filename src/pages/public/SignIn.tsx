@@ -16,6 +16,9 @@ function SignIn() {
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  //check data 
+  // const [isEmail, setIsEmail] 
+
   const logo: Logo[] = [
     {
       name: "Facebook",
@@ -45,6 +48,9 @@ function SignIn() {
 
   //gửi api
   const handleLogin = async () => {
+
+
+
     try {
       const response = await axios.post(api, {
         username,
@@ -64,29 +70,34 @@ function SignIn() {
 
   return (
     <div className="flex flex-col w-screen justify-center items-center">
+      <div className="back fixed top-0 right-0">
+        <Button className="p-3 text-xl text-black bg-transparent hover:bg-yellow-100 rounded-md" to="/dang-nhap">
+          Quay lại đăng nhập
+        </Button>
+      </div>
       <div className="w-80">
         <div className="">
           <img src="" alt="" />
         </div>
         <div className="font-bold text-4xl text-left p-2">Đăng ký</div>
-        <TextField onChange={handleUsename} type="text" label="Username" />
-        <TextField onChange={handleEmail} type="email" label="Email" />
-        <TextField onChange={handlePassword} type="password" label="Password" />
-        <TextField
+        <TextField name="email" id="email" onChange={handleEmail} type="email" label="Email" />
+        <TextField name="password" id="password" onChange={handlePassword} type="password" label="Password" />
+        <TextField name="confirmPassword" id="confirmPassword"
           onChange={handleConfirmPassword}
           type="password"
           label="Confirm password"
         />
+        <TextField name="birthDate" id="birthDate" onChange={handleUsename} type="date" label="Ngày sinh" className="pr-2" />
         <div className="p-2">
           <Button onClick={handleLogin} outline large primary>
             Đăng ký
           </Button>
         </div>
-        <div className="flex gap-2 ">
+        <div className="flex gap-2 p-2">
           {logo.map((item, index) => (
             <Button
               key={index}
-              className="flex bg-white  "
+              className="flex bg-transparent"
               lefticon={<Image sizes="small" src={item.src} alt={item.name} />}
               small={true}
               flex={true}

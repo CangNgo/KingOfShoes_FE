@@ -18,11 +18,12 @@ interface BaseButtonProps
   large?: boolean;
   lefticon?: React.ReactNode;
   righticon?: React.ReactNode;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   background?: string;
   flex?: boolean;
   onClick?: () => void;
+  marginIconNone?: boolean;
 }
 
 // Type for the component itself
@@ -52,6 +53,7 @@ const Button = React.forwardRef<
       background,
       onClick,
       flex,
+      marginIconNone,
       ...passProps
     },
     ref
@@ -83,12 +85,11 @@ const Button = React.forwardRef<
 
     // Build the className manually
     let classes =
-      className ||
-      "outline-none bg-yellow-100 hover:outline-none border-none hover:bg-yellow-200 ";
+    className + " border-none " 
 
     // Conditional class application
     if (primary) classes += " primary";
-    if (outline) classes += " outline";
+    if (outline) classes += " outline outline-offset-2 outline-1";
     if (onlyicon) classes += " onlyicon";
     if (text) classes += " text";
     if (disable) classes += " disable";
@@ -100,12 +101,15 @@ const Button = React.forwardRef<
     if (flex) classes += " flex justify-center items-center";
 
     props.className = classes;
-
     return (
       <Component {...props} ref={ref}>
-        {lefticon && <span className="mr-2">{lefticon}</span>}
+        {lefticon && (
+          <span className={marginIconNone ? "m-0" : "mr-2"}>{lefticon}</span>
+        )}
         <span>{children}</span>
-        {righticon && <span className="ml-2">{righticon}</span>}
+        {righticon && (
+          <span className={marginIconNone ? "m-0" : "ml-2"}>{righticon}</span>
+        )}
       </Component>
     );
   }

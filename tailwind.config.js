@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import plugin from "tailwindcss/plugin";
+
 export default {
   content: [
     "./index.html",
@@ -17,5 +19,20 @@ export default {
   },
   plugins: [
     require("flowbite/plugin"), // Thêm plugin flowbite
+    plugin(function ({ addUtilities }) {
+      addUtilities({
+        ".no-spinner": {
+          /* Chrome, Safari, Edge */
+          "&::-webkit-inner-spin-button, &::-webkit-outer-spin-button": {
+            "-webkit-appearance": "none",
+            margin: "0",
+          },
+          /* Firefox */
+          "&": {
+            "-moz-appearance": "textfield",
+          },
+        },
+      });
+    }),
   ],
 };

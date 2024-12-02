@@ -1,6 +1,6 @@
 const userRoutes = {
   home: "/",
-  addToCart: "/them-vao-gio-hang",
+  addToCart: "/gio-hang",
   checkout: "/thanh-toan",
   comment: "/binh-luan",
   profile: "/thong-tin-nguoi-dung",
