@@ -34,7 +34,7 @@ navigate("gio-hang")
         </div>
 
         {/* Navigation Menu */}
-        <div className="relative ml-4">
+        <div className="relative ml-4 z-10">
           <button
             className="flex items-center font-bold text-gray-700"
             onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}

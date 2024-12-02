@@ -1,5 +1,8 @@
-import React from 'react';
-import SlideShow from './components/commons/Slideshow';
+import React, { ComponentType } from "react";
+import { LayoutRouteProps, Navigate, Route, Routes } from "react-router-dom";
+import { adminConfig, userConfig, publicConfig } from "./routes/routes";
+import NotFound from "./routes/NotFound";
+import DefaultLayout from "./components/layouts/DefaultLayout";
 
 // Định nghĩa interface RouteConfig
 export interface RouteConfig {
@@ -10,7 +13,7 @@ export interface RouteConfig {
 }
 
 function App() {
-  const role: string = "user"; // Hoặc lấy từ context/state authentication
+  const role: string | null = localStorage.getItem("auth_role");
 
   const renderRoute = (route: RouteConfig) => {
     const Layout = route.layout || DefaultLayout;
@@ -23,13 +26,13 @@ function App() {
         element={
           route.isPrivate ? (
             // Nếu là route private, bạn có thể thêm logic kiểm tra authentication
-            role === "admin" || role === "user" ? (
+            role === "ADMIN" || role === "SUPPER_ADMIN" ? (
               <Layout>
                 <Component />
               </Layout>
             ) : (
               // Redirect hoặc render trang login
-              <Navigate to="/login" replace />
+              <Navigate to="/dang-nhap" replace />
             )
           ) : (
             <Layout>
@@ -43,19 +46,16 @@ function App() {
 
   return (
     <Routes>
-      {/* Public Routes - Accessible by everyone */}
       {publicConfig.map(renderRoute)}
 
-      {/* User Routes - Only for authenticated users */}
-      {role === "user" && userConfig.map(renderRoute)}
+      {role === "SUPPER_ADMIN" && userConfig.map(renderRoute)}
 
-      {/* Admin Routes - Only for admin users */}
-      {role === "admin" && adminConfig.map(renderRoute)}
+      {role === "ADMIN" && adminConfig.map(renderRoute)}
 
       {/* Handle 404 */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
-};
+}
 
 export default App;

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import Button from './Button'; // Sử dụng Button.tsx bạn tải lên
-import Image from './Image';   // Sử dụng Image.tsx bạn tải lên
+import React, { useState, useEffect } from 'react';
+import Button from './Button';
+import Image from './Image';
 
 interface Slide {
   src: string;
@@ -9,43 +9,61 @@ interface Slide {
 
 interface SlideShowProps {
   slides: Slide[];
+  interval?: number;
 }
 
-const SlideShow: React.FC<SlideShowProps> = ({ slides }) => {
+const SlideShow: React.FC<SlideShowProps> = ({ slides, interval = 3000 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : slides.length - 1));
-  };
-
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex < slides.length - 1 ? prevIndex + 1 : 0));
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
   };
 
-  const handleDotClick = (index: number) => {
-    setCurrentIndex(index);
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + slides.length) % slides.length);
   };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      handleNext();
+    }, interval);
+
+    return () => clearInterval(timer); // Dọn dẹp khi component bị unmount
+  }, [currentIndex, interval]);
 
   return (
-    <div className="slideshow">
-      <div className="slideshow-container">
-        {/* Hiển thị hình ảnh bằng Image.tsx */}
-        <Image src={slides[currentIndex].src} alt={slides[currentIndex].alt} />
-        {/* Nút điều hướng */}
-        <Button onClick={handlePrev} className="prev-btn">
-          &#8249;
-        </Button>
-        <Button onClick={handleNext} className="next-btn">
-          &#8250;
-        </Button>
-      </div>
-      <div className="dots">
+    <div className="relative w-[1248px] h-[332px] mx-auto overflow-hidden bg-gray-100 rounded-md shadow-lg">
+      {/* Hình ảnh */}
+      <Image
+        src={slides[currentIndex].src}
+        alt={slides[currentIndex].alt}
+        className="w-full h-full object-cover"
+      />
+
+      {/* Nút điều hướng */}
+      <button
+        onClick={handlePrev}
+        className="absolute top-1/2 left-4 -translate-y-1/2 bg-gray-800 text-white rounded-full p-2 hover:bg-gray-600"
+      >
+        &#8249;
+      </button>
+      <button
+        onClick={handleNext}
+        className="absolute top-1/2 right-4 -translate-y-1/2 bg-gray-800 text-white rounded-full p-2 hover:bg-gray-600"
+      >
+        &#8250;
+      </button>
+
+      {/* Dấu chấm trạng thái */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
         {slides.map((_, index) => (
           <span
             key={index}
-            className={`dot ${index === currentIndex ? 'active' : ''}`}
-            onClick={() => handleDotClick(index)}
-          ></span>
+            onClick={() => setCurrentIndex(index)}
+            className={`w-3 h-3 rounded-full cursor-pointer ${
+              currentIndex === index ? 'bg-orange-500' : 'bg-gray-400'
+            }`}
+          />
         ))}
       </div>
     </div>
