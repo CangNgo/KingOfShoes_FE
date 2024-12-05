@@ -7,22 +7,22 @@ import { toast } from "sonner";
 
 interface dataCart {
   id: string;
-  img: { urlImage: string }[]; // Cho phép cả string và mảng object
+  images: { urlImage: string }[]; // Cho phép cả string và mảng object
   name: string;
   price: number;
-  color: string[];
-  size: number[];
+  color: string;
+  size: string;
   branch: string;
   quantity: number;
   isChecked: boolean;
 }
-interface checkOut {
+export interface checkOut {
   id: string;
-  img: string | { urlImage: string }[];
+  images: string[] | { urlImage: string }[];
   name: string;
   price: number;
-  colorItem: string;
-  sizeItem: number;
+  color: string;
+  size: string;
   branch: string;
   quantity: number;
   isChecked: boolean;
@@ -51,9 +51,9 @@ function Cart() {
         // Validate và chuyển đổi các item sang đúng kiểu dataCart
         const cartItems: dataCart[] = parsedItems.map((item: any) => ({
           id: item.id || '',
-          img: Array.isArray(item.img)
-            ? item.img
-            : (item.img ? [{ img: item.img }] : []), // Chuyển đổi img thành mảng các object
+          images: Array.isArray(item.images)
+            ? item.images
+            : (item.images ? [{ images: item.images }] : []), // Chuyển đổi images thành mảng các object
           name: item.name || '',
           price: item.price || 0,
           color: item.color || [],
@@ -73,7 +73,7 @@ function Cart() {
     // Sử dụng
     const cartItems = getCartItemsFromLocalStorage();
 
-    console.log("sp local", cartItems[0]);
+    console.log("sp local", cartItems);
     setItem(cartItems);
   }, []);
 
@@ -188,21 +188,21 @@ function Cart() {
     }
 
     const checkoutItems: checkOut[] = selectedItems.map((cartItem) => {
-      // Lấy size và color từ DOM
-      const sizeInput = document.querySelector(`#shoes-size-${cartItem.id}`) as HTMLInputElement | null;
-      const colorInput = document.querySelector(`#shoes-color-${cartItem.id}`) as HTMLInputElement | null;
+      // // Lấy size và color từ DOM
+      // const sizeInput = document.querySelector(`#shoes-size-${cartItem.id}`) as HTMLInputElement | null;
+      // const colorInput = document.querySelector(`#shoes-color-${cartItem.id}`) as HTMLInputElement | null;
 
-      const sizeItem = sizeInput ? parseInt(sizeInput.value) : cartItem.size[0]; // Dùng giá trị mặc định nếu không chọn
-      const colorItem = colorInput ? colorInput.value : cartItem.color[0]; // Dùng màu đầu tiên nếu không chọn
+      // const sizeItem = sizeInput ? parseInt(sizeInput.value) : cartItem.size[0]; // Dùng giá trị mặc định nếu không chọn
+      // const colorItem = colorInput ? colorInput.value : cartItem.color[0]; // Dùng màu đầu tiên nếu không chọn
 
       // Tạo đối tượng checkOut
       return {
         id: cartItem.id,
-        img: cartItem.img,
+        images: cartItem.images,
         name: cartItem.name,
         price: cartItem.price,
-        colorItem,
-        sizeItem,
+        color:cartItem.color,
+        size:cartItem.size,
         branch: cartItem.branch,
         quantity: cartItem.quantity,
         isChecked: true,

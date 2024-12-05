@@ -69,8 +69,10 @@ function AddProduct() {
     const fetchAllSuppliers = async () => {
       try {
         const response = await findAllSuppliers()
-        setSupplier(response.data)
-        const options = response.data.map((item: SupplierDTO) => ({
+        console.log(response.body.data);
+        
+        setSupplier(response.body.data)
+        const options = response.body.data.map((item: SupplierDTO) => ({
           value: item.supplierId,
           label: item.supplierName,
         }));

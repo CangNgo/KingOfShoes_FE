@@ -7,14 +7,14 @@ import { toast, Toaster } from 'sonner';
 
 // Định nghĩa interface cho sản phẩm
 interface ProductDetail {
-  id: string;
+  id: string | null;
   name: string;
   price: number;
   shortDescription?: string;
   longDescription?: string;
-  img: { urlImage: string }[];
-  color?: string[];
-  size?: number[];
+  images: { urlImage: string }[];
+  color?: string;
+  size?: string|null;
   branch?: string;
   quantity?: number;
 }
@@ -23,9 +23,10 @@ function ProductDetail() {
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [searchParams] = useSearchParams();
   const [color, setColor] = useState('');
-  const [size, setSize] = useState<number | null>(null);
+  const [size, setSize] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<{ urlImage: string }[]>([])
 
   // Lấy giá trị của tham số 'id'
   const productId = searchParams.get('id') || null;
@@ -40,18 +41,23 @@ function ProductDetail() {
 
       try {
         const response = await findProductById(productId);
+        const product = response.data.products
+        const inventories = response.data.inventories
+        console.log("sản phẩm: ", product);
         
-        if (response.data) {
-          setProduct(response.data);
+        if (product) {
+          setProduct(product);
           // Khởi tạo giá trị mặc định cho color và size nếu cần
-          setColor(response.data.color?.[0] || '');
-          setSize(response.data.size?.[0] || null);
+          setColor(inventories[0].color || '');
+          setSize(inventories[0].size || null);
+          setImageUrl(product?.images[0].urlImage)
+          console.log("Hình ảnh: ", product?.images[0].urlImage);
         } else {
           setError('Không tìm thấy sản phẩm');
         }
       } catch (err) {
         setError('Lỗi khi tải thông tin sản phẩm');
-        console.error(err);
+        toast.error("Lỗi khi lấy sản phẩm")
       } finally {
         setLoading(false);
       }
@@ -67,7 +73,7 @@ function ProductDetail() {
 
   // Xử lý khi chọn kích thước
   const handleChangeSize = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSize(Number(e.target.value));
+    setSize(e.target.value);
   };
 
   const handleAddToCart = () => {
@@ -92,8 +98,10 @@ function ProductDetail() {
       const newItem: ProductDetail = {
         ...product,
         quantity: 1,
-        // color: color, 
-        // size: size
+        color: color, 
+        size: size,
+        id:productId,
+        price: product.price
       };
       items.push(newItem);
 
@@ -118,7 +126,7 @@ function ProductDetail() {
         <div className="w-full h-full">
           <Image 
             classes="w-full h-full rounded-lg object-cover" 
-            src={product.img?.[0]?.urlImage || ''} 
+            src={product.images?.[0]?.urlImage || ''} 
           />
         </div>
       </div>
@@ -145,7 +153,7 @@ function ProductDetail() {
                   onChange={handleChangeColor}
                 >
                   {/* Thêm các option cho màu sắc nếu có */}
-                  <option value="">Chọn màu</option>
+                  <option value="">{color}</option>
                 </select>
               </span>
               <span>
@@ -157,7 +165,7 @@ function ProductDetail() {
                   onChange={handleChangeSize}
                 >
                   {/* Thêm các option cho kích thước nếu có */}
-                  <option value="">Chọn size</option>
+                  <option >{size}</option>
                 </select>
               </span>
             </div>
@@ -180,8 +188,8 @@ function ProductDetail() {
         <div>{product.longDescription}</div>
       </div>
       <div className="w-1/3 pr-4">
-        {product.img?.[1] && (
-          <Image src={product.img[1].urlImage} />
+        {product.images?.[1] && (
+          <Image src={product.images[1].urlImage} />
         )}
       </div>
       <Toaster richColors position='top-right'/>

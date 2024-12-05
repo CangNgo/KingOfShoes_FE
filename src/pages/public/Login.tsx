@@ -23,6 +23,13 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
+  let checkEmail = false
+  let checkPassowrd = false
+  //error 
+  const [errorEmail, setErrorEmail] = useState("")
+  const [errorPassword, setErrorPassword] = useState("")
+
+
   const navigate = useNavigate()
 
   const logo: Logo[] = [
@@ -36,6 +43,40 @@ function Login() {
     },
   ];
 
+
+
+    //check
+    const handleCheckEmail = (email: string) => {
+      const emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  
+      if (email === "") {
+        setErrorEmail("Vui lòng nhập email")
+        return
+      }
+  
+      if (!emailPattern.test(email)) {
+        setErrorEmail("Email không đúng định dạng")
+        return;
+      }
+      setErrorEmail("")
+      checkEmail = true
+    }
+  
+    const handleCheckPassword = (password: string) => {
+      if (password === "") {
+        setErrorPassword("Password không được để trống")
+        return
+      }
+  
+      if (password.length <= 8) {
+        setErrorPassword("Mật khẩu không được bé hơn 8 ")
+        return
+      }
+  
+      setErrorPassword("")
+      checkPassowrd = true
+    }
+
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
@@ -45,19 +86,14 @@ function Login() {
   };
 
   const handleLogin = async () => {
+    
+    handleCheckEmail(email);
+    handleCheckPassword(password);
     //kiem tra du lieu
-    const emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if(!emailPattern.test(email)){
-      alert("Email không đúng định dạng")
-      return;
-    }
-
-    if(password.length <8){
-      alert("Mật khẩu phải hơn 8 ký tự")
-      return;
-    }
+  
 
     try {
+      if(!checkEmail || !checkPassowrd) return
       const response = await axios.post(api, { email, password });
       console.log(response);
       
@@ -78,58 +114,60 @@ function Login() {
       }
       toast.success("Đăng nhập thành công")
     } catch (error: unknown) {
-        toast.error("Lỗi khi đăng nhập")
+        toast.error("Tài khoản không tồn tại")
     }
   };
 
   return (
-    <div className="flex flex-col w-screen justify-center items-center">
-      <div className="back fixed top-0 right-0">
-        <Button className="p-3 text-xl text-black" to="/">
-          X
-        </Button>
-      </div>
-      <div className="w-80">
-        <div className="">
-          <img src="" alt="" />
-        </div>
-        <div className="font-bold text-4xl text-left p-2">Đăng nhập</div>
-        <TextField
-          tabIndex={1}
-          type="email"
-          onChange={handleEmail}
-          label="Email"
-          placeholder ="example@gmail.com"
-        />
-        <TextField
-          tabIndex={2}
-          type="password"
-          onChange={handlePassword}
-          label="Password"
-          placeholder="Password"
-        />
-        <div className="p-2">
-          <Button outline large primary className=" bg-transparent hover:bg-yellow-100 active:border-indigo-400" onClick={handleLogin}>
-            Đăng nhập
+    <div className="flex h-screen flex-col w-screen justify-center items-center">
+        <div className="back fixed top-0 right-0">
+          <Button className="p-3 text-xl text-black" to="/">
+            X
           </Button>
         </div>
-        <div className="pr-2 flex flex-row-reverse" >
-          <Link to="/dang-ky" className="text-black hover:text-yellow-400">Đăng ký</Link>
+        <div className="w-80">
+          <div className="">
+            <img src="" alt="" />
+          </div>
+          <div className="font-bold text-4xl text-left p-2">Đăng nhập</div>
+          <TextField
+            tabIndex={1}
+            type="email"
+            onChange={handleEmail}
+            label="Email"
+            placeholder ="example@gmail.com"
+            error={errorEmail}
+          />
+          <TextField
+            tabIndex={2}
+            type="password"
+            onChange={handlePassword}
+            label="Password"
+            placeholder="Password"
+            error={errorPassword}
+          />
+          <div className="p-2">
+            <Button outline large primary className=" bg-transparent hover:bg-yellow-100 active:border-indigo-400" onClick={handleLogin}>
+              Đăng nhập
+            </Button>
+          </div>
+          <div className="pr-2 flex flex-row-reverse" >
+            <Link to="/dang-ky" className="text-black hover:text-yellow-400">Đăng ký</Link>
+          </div>
+          {/* <div className="flex gap-2 p-2 ">
+            {logo.map((item, index) => (
+              <Button
+                key={index}
+                className="flex bg-transparent hover:bg-transparent hover:border-double hover:scale-110"
+                lefticon={<Image sizes="small" src={item.src} alt={item.name} />}
+                children={item.name}
+                outline
+                flex={true}
+              ></Button>
+            ))}
+          </div> */}
+          <Toaster position="top-right"/>
         </div>
-        <div className="flex gap-2 p-2 ">
-          {logo.map((item, index) => (
-            <Button
-              key={index}
-              className="flex bg-transparent hover:bg-transparent hover:border-double hover:scale-110"
-              lefticon={<Image sizes="small" src={item.src} alt={item.name} />}
-              children={item.name}
-              outline
-              flex={true}
-            ></Button>
-          ))}
-        </div>
-        <Toaster position="top-right"/>
-      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { DOMAIN } from "."
 import axiosJWT from "../config/axiosJWTConfig"
 
-const baseURL = `${DOMAIN}/skeleton/admin/v1/supplier/getall`
+const baseURL = `${DOMAIN}/skeleton/admin/v1/supplier?isDeleted=false&page=1&size=10&key`
 
 export const findAllSuppliers = async ()=>{
     try {
