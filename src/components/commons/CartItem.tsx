@@ -8,11 +8,11 @@ import useFormatCurrency from "../../hooks/useFormatCurrency";
 interface CartItemProps {
   item: {
     id: string;
-    img: string;
+    images: { urlImage: string }[]; 
     name: string;
     price: number;
-    color: string[];
-    size: number[];
+    color: string;
+    size: string;
     branch: string;
     quantity: number;
   };
@@ -38,8 +38,12 @@ const CartItem: React.FC<CartItemProps> = ({
     <tr>
       <td className="py-3">
         <div className="flex justify-center items-center">
-          <input className="mr-4 top-0" onClick={() =>onChecked(item.id)} type="checkbox" />
-          <Image imgString={item.img} />
+          <input className="mr-4 top-0" onClick={() => onChecked(item.id)} type="checkbox" />
+          <div className="">
+            {item.images?.[0] && (
+              <Image imgString={item.images[0]} />
+            )}
+          </div>
         </div>
       </td>
       <td className="py-3">
@@ -53,11 +57,9 @@ const CartItem: React.FC<CartItemProps> = ({
                 className="p-0 w-40 border-none rounded-md focus:outline-none focus:ring-transparent focus:border-none"
                 id={`shoes-color-${item.id}`}
               >
-                {item.color.map((color, index) => (
-                  <option value={color} key={index}>
-                    {color}
+                  <option value={item.color}>
+                    {item.color}
                   </option>
-                ))}
               </select>
             </span>
             <span>Nike</span>
@@ -67,11 +69,9 @@ const CartItem: React.FC<CartItemProps> = ({
                 className="p-0 w-40 border-none rounded-md focus:outline-none focus:ring-transparent focus:border-none"
                 id={`shoes-size-${item.id}`}
               >
-                {item.size.map((size, index) => (
-                  <option value={size} key={index}>
-                    {size}
+                  <option value={item.size}>
+                    {item.size}
                   </option>
-                ))}
               </select>
             </span>
           </div>

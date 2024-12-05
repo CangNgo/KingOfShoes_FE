@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import NavigationMenu from "../commons/NavigationMenu";
 import SearchBar from "../commons/SearchBar";
 import Image from "../commons/Image";
+import cang from "../../assets/img/462174035_1265880167773698_7926684173028503711_n.jpg"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
@@ -13,17 +14,205 @@ import {
 import { productCategories } from "../commons/categoriesProduct";
 import { userCategories } from "../commons/categoriesUser";
 import Button from "./Button";
+import { useNavigate } from "react-router-dom";
 
+import i18n from 'i18next';
+import { initReactI18next, useTranslation } from 'react-i18next';
+import SelectBox from "./SelectBox";
+
+i18n
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: {
+        translation: {
+          welcome: 'Welcome',
+          hello: 'Hello, {{name}}!',
+          cart: 'Cart',
+          notifications: 'Notifications',
+          messages: 'Messages',
+          account: 'Account',
+          login: 'Login',
+          register: 'Register',
+          logout: 'Logout',
+          postAd: 'Post Ad',
+          category:"Category"
+        }
+      },
+      vi: {
+        translation: {
+          welcome: 'Chào mừng',
+          hello: 'Xin chào, {{name}}!',
+          cart: 'Giỏ hàng',
+          notifications: 'Thông báo',
+          messages: 'Tin nhắn',
+          account: 'Tài khoản',
+          login: 'Đăng nhập',
+          register: 'Đăng ký',
+          logout: 'Đăng xuất',
+          postAd: 'Đăng tin',
+          category:"Danh mục"
+        }
+      },
+      fr: {
+        translation: {
+          welcome: 'Bienvenue',
+          hello: 'Bonjour, {{name}}!',
+          cart: 'Panier',
+          notifications: 'Notifications',
+          messages: 'Messages',
+          account: 'Compte',
+          login: 'Se connecter',
+          register: 'S\'inscrire',
+          logout: 'Se déconnecter',
+          postAd: 'Poster une annonce',
+          category:"Bienvenido"
+        }
+      },
+      es: {
+        translation: {
+          welcome: 'Bienvenido',
+          hello: '¡Hola, {{name}}!',
+          cart: 'Carrito',
+          notifications: 'Notificaciones',
+          messages: 'Mensajes',
+          account: 'Cuenta',
+          login: 'Iniciar sesión',
+          register: 'Registrarse',
+          logout: 'Cerrar sesión',
+          postAd: 'Publicar anuncio',
+          category:"Bienvenido"
+        }
+      },
+      de: {
+        translation: {
+          welcome: 'Willkommen',
+          hello: 'Hallo, {{name}}!',
+          cart: 'Warenkorb',
+          notifications: 'Benachrichtigungen',
+          messages: 'Nachrichten',
+          account: 'Konto',
+          login: 'Anmelden',
+          register: 'Registrieren',
+          logout: 'Abmelden',
+          postAd: 'Anzeige aufgeben',
+          category:"Warenkorb"
+        }
+      },
+      ja: {
+        translation: {
+          welcome: 'ようこそ',
+          hello: 'こんにちは、{{name}}！',
+          cart: 'カート',
+          notifications: '通知',
+          messages: 'メッセージ',
+          account: 'アカウント',
+          login: 'ログイン',
+          register: '登録',
+          logout: 'ログアウト',
+          postAd: '広告を投稿'
+        }
+      },
+      ko: {
+        translation: {
+          welcome: '환영합니다',
+          hello: '안녕하세요, {{name}}!',
+          cart: '장바구니',
+          notifications: '알림',
+          messages: '메시지',
+          account: '계정',
+          login: '로그인',
+          register: '회원가입',
+          logout: '로그아웃',
+          postAd: '광고 게시'
+        }
+      },
+      zh: {
+        translation: {
+          welcome: '欢迎',
+          hello: '你好, {{name}}!',
+          cart: '购物车',
+          notifications: '通知',
+          messages: '消息',
+          account: '账户',
+          login: '登录',
+          register: '注册',
+          logout: '退出',
+          postAd: '发布广告'
+        }
+      },
+      ar: {
+        translation: {
+          welcome: 'مرحبا',
+          hello: 'مرحبا، {{name}}!',
+          cart: 'عربة التسوق',
+          notifications: 'إشعارات',
+          messages: 'رسائل',
+          account: 'حساب',
+          login: 'تسجيل الدخول',
+          register: 'التسجيل',
+          logout: 'تسجيل الخروج',
+          postAd: 'نشر إعلان'
+        }
+      },
+      ru: {
+        translation: {
+          welcome: 'Добро пожаловать',
+          hello: 'Привет, {{name}}!',
+          cart: 'Корзина',
+          notifications: 'Уведомления',
+          messages: 'Сообщения',
+          account: 'Аккаунт',
+          login: 'Войти',
+          register: 'Регистрация',
+          logout: 'Выйти',
+          postAd: 'Разместить объявление'
+        }
+      }
+    },
+    lng: 'vi',
+    fallbackLng: 'vi'
+  });
 const Header: React.FC = () => {
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const navigate = useNavigate()
+
+  const handleGoToHome= ()=>{
+    navigate('/')
+  }
+
+  const options = [
+    { label: "English", value: "en" },
+    { label: "Tiếng Việt", value: "vi" },
+    { label: "Français", value: "fr" },
+    { label: "Español", value: "es" },
+    { label: "Deutsch", value: "de" },
+    { label: "日本語", value: "ja" },
+    { label: "한국어", value: "ko" },
+    { label: "中文", value: "zh" },
+    { label: "العربية", value: "ar" },
+    { label: "Русский", value: "ru" }
+  ];
+  
+  const handleCart = () => {
+    navigate("gio-hang")
+  }
+  //đa ngôn ngữ 
+  const { t, i18n } = useTranslation();
+  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedLanguage = event.target.value;
+    console.log(selectedLanguage);
+    
+    i18n.changeLanguage(selectedLanguage);
+  };
 
   return (
     <header className="bg-white shadow-md py-2">
       <div className="container mx-auto flex items-center justify-between px-4">
         {/* Logo */}
-        <div className="flex items-center space-x-4">
-          <Image alt="Chợ Tốt Logo" />
+        <div className="flex items-center space-x-4 cursor-pointer" onClick={handleGoToHome}>
+          <Image src={cang} alt="Chợ Tốt Logo" />
         </div>
 
         {/* Navigation Menu */}
@@ -32,7 +221,7 @@ const Header: React.FC = () => {
             className="flex items-center font-bold text-gray-700"
             onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}
           >
-            Danh mục
+           {t("category")}
           </button>
           {isCategoryMenuOpen && (
             <div className="absolute top-full left-0 bg-white shadow-md mt-2 w-72 rounded-md">
@@ -74,6 +263,7 @@ const Header: React.FC = () => {
           >
             <FontAwesomeIcon
               icon={faBagShopping}
+              onClick={handleCart}
               className="w-5 h-5 text-gray-500"
             />
           </button>
@@ -98,7 +288,7 @@ const Header: React.FC = () => {
                 icon={faUser}
                 className="w-5 h-5 text-gray-700"
               />
-              <span className="ml-2 text-gray-700">Tài khoản</span>
+              <span className="ml-2 text-gray-700">{t("account")}</span>
             </button>
             {isAccountMenuOpen && (
               <div className="absolute top-full right-0 bg-white shadow-md mt-2 w-72 rounded-md overflow-hidden z-50">
@@ -112,7 +302,7 @@ const Header: React.FC = () => {
                   </div>
                   <div className="ml-3">
                     <p className="text-gray-700 font-bold">
-                      <Button className="bg-transparent hover:bg-transparent text-black" to="/dang-nhap" >Đăng nhập</Button> / <Button className="bg-transparent hover:bg-transparent text-black" to="/dang-ky">Đăng ký</Button>
+                      <Button className="bg-transparent hover:bg-transparent text-black" to="/dang-nhap" >{t("login")}</Button> / <Button className="bg-transparent hover:bg-transparent text-black" to="/dang-ky">Đăng ký</Button>
                     </p>
                   </div>
                 </div>
@@ -150,17 +340,27 @@ const Header: React.FC = () => {
                     </ul>
                   </div>
                 ))}
+                <Button>Đăng xuất</Button>
+                <button>hello</button>
               </div>
             )}
+
           </div>
 
           {/* Post Button */}
           <button className="ml-4 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
-            ĐĂNG TIN
+           {t("postAd")}
           </button>
         </div>
+        <SelectBox 
+        onChange={handleLanguageChange} 
+        options={options} 
+        defaultOptionValue={"Việt Nam"}
+        name="language-selector" 
+        id="language-selector" 
+      /> 
       </div>
-    </header>
+     </header>
   );
 };
 export default Header;

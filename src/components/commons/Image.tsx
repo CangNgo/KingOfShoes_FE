@@ -2,13 +2,13 @@ import React from "react";
 import { useState, forwardRef } from "react";
 import defaultImage from "../../assets/img/defaultImage.jpg";
 interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  src?: string;
+  src?: string  ;
   alt?: string;
   fallBack?: string;
   imgSmall?: boolean;
   classes?: string;
   imgCart?: boolean;
-  imgString?: string;
+  imgString?:{ urlImage: string; };
 }
 
 const Image = forwardRef<HTMLImageElement, ImageProps>(
@@ -27,11 +27,14 @@ const Image = forwardRef<HTMLImageElement, ImageProps>(
     if (imgCart) {
       classes += " w-";
     }
+    if(imgString){
+      src = imgString?.urlImage
+    }
     return (
       <img
-        className=" w-24 "
+        className={classes + " w-24 bg-none"}
         ref={ref}
-        src={imgString ? `/src/assets/img/` + imgString : src}
+        src={src ?  src : fallBack}
         alt={alt}
         {...props}
         onError={handleError}

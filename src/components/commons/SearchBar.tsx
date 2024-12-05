@@ -47,7 +47,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             />
             <Button
                 type="submit"
-                className={`px-4 py-2 rounded-l-none ${buttonClassName}`}
+                className={`px-4 py-2 rounded-l-none hover:bg-yellow-100 ${buttonClassName}`}
                 onClick={() => onSearch(query)}
                 {...buttonProps}
             >

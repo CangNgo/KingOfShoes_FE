@@ -1,8 +1,9 @@
 const adminRoutes = {
-  addProduct: "/them-san-pham",
-  reportUser: "/bao-cao-nguoi-dung",
-  addCategory: "/them-loai-san-pham",
-  disableUser: "/chan-nguoi-dung",
+  adminHome: "/admin",
+  addProduct: "/admin/san-pham/them-san-pham",
+  reportUser: "/admin/report/bao-cao-nguoi-dung",
+  addCategory: "/admin/loai-san-pham/them-loai-san-pham",
+  disableUser: "/admin/nguoi-dung/chan-nguoi-dung",
 };
 
 export default adminRoutes;

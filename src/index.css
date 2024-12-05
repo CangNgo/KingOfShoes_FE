@@ -29,8 +29,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -84,3 +82,36 @@ button:focus-visible {
   align-items: center;
   flex-direction: column;
 } */
+
+/* toast  */
+/* Custom CSS for Toast */
+/* Toast Container */
+.sonner-toast-container {
+  font-family: 'Arial', sans-serif;
+}
+
+/* Success */
+.sonner-toast--success {
+  background-color: #28a745; /* Màu xanh đậm */
+  color: white;
+}
+
+/* Error */
+.sonner-toast--error {
+  background-color: #dc3545; /* Màu đỏ đậm */
+  color: white;
+}
+
+/* Info */
+.sonner-toast--info {
+  background-color: #007bff; /* Màu xanh dương */
+  color: white;
+}
+
+/* Warning */
+.sonner-toast--warning {
+  background-color: #ffc107; /* Màu vàng */
+  color: black;
+}
+
+

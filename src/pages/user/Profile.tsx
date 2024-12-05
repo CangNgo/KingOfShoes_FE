@@ -1,10 +1,10 @@
 import React from "react";
-interface props {
-  name?: string;
+interface Props {
+  title?: string;
 }
 
-function Profile(props: props) {
-  return <>{props.name}</>;
+function Profile({ title = "Default Title" }: Props) {
+  return <>trang cá nhân</>;
 }
 
 export default Profile;

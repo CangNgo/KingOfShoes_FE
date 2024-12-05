@@ -85,12 +85,11 @@ const Button = React.forwardRef<
 
     // Build the className manually
     let classes =
-      "outline-none bg-yellow-100 focus:outline-none border-none hover:bg-yellow-200 " +
-      className;
+    className + " border-none " 
 
     // Conditional class application
     if (primary) classes += " primary";
-    if (outline) classes += " outline";
+    if (outline) classes += " outline outline-offset-2 outline-1";
     if (onlyicon) classes += " onlyicon";
     if (text) classes += " text";
     if (disable) classes += " disable";

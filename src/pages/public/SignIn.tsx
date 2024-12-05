@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import TextField from "../../components/commons/TextField";
 import Button from "../../components/commons/Button";
 import Image from "../../components/commons/Image";
+import { SignIn } from "../../types/userTypes";
+import { addUser } from "../../apis/userAPI";
+import { toast, Toaster } from "sonner";
 
 interface Logo {
   name: string;
@@ -10,11 +13,22 @@ interface Logo {
 }
 
 function SignIn() {
-  const api = "/api/login";
-  const [username, setUsername] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  //check data 
+  let checkEmail = false
+  let checkPassowrd = false
+  let checkConfirmPassword = false
+  let checkDateOfBirth = false
+
+  //error 
+  const [errorEmail, setErrorEmail] = useState("")
+  const [errorPassword, setErrorPassword] = useState("")
+  const [errorDataOfBirth, setErrorDateOfBirth] = useState("")
+  const [errorConfirmPassword, setErrorConfirmPassword] = useState("")
 
   const logo: Logo[] = [
     {
@@ -27,8 +41,10 @@ function SignIn() {
     },
   ];
 
-  const handleUsename = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value);
+  const handleDateOfBirth = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    let date = new Date(e.target.value)
+    setDateOfBirth(date);
   };
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,24 +59,128 @@ function SignIn() {
     setConfirmPassword(e.target.value);
   };
 
-  //gửi api
-  const handleLogin = async () => {
-    try {
-      const response = await axios.post(api, {
-        username,
-        email,
-        password,
-        confirmPassword,
-      });
-      if (response.data.token) {
-        localStorage.setItem("auth_token", response.data.token);
-        console.log("Đăng nhập thành công");
-      }
-    } catch (error: unknown) {
-      alert("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
-      console.error(error);
+  //check
+  const handleCheckEmail = (email: string) => {
+    const emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (email === "") {
+      setErrorEmail("Vui lòng nhập email")
+      return
     }
-  };
+
+    if (!emailPattern.test(email)) {
+      setErrorEmail("Email không đúng định dạng")
+      return;
+    }
+    setErrorEmail("")
+    checkEmail = true
+  }
+
+  const handleCheckPassword = (password: string) => {
+    if (password === "") {
+      setErrorPassword("Password không được để trống")
+      return
+    }
+
+    if (password.length <= 8) {
+      setErrorPassword("Mật khẩu không được bé hơn 8 ")
+      return
+    }
+
+    setErrorPassword("")
+    checkPassowrd = true
+  }
+
+
+  const hanldelCheckConfirmPassword = (confirmPassword: string) => {
+    if (confirmPassword === "") {
+      setErrorConfirmPassword("Mật khẩu không được để trống")
+      return
+    }
+
+    if (confirmPassword.length <= 8) {
+      setErrorConfirmPassword("Xác nhận mật khẩu không được bé hơn 8")
+      return
+    }
+
+    if (confirmPassword !== password) {
+      setErrorConfirmPassword("Xác nhận mật khẩu không giống với mật khẩu")
+      return
+    }
+
+    setErrorConfirmPassword("")
+    checkConfirmPassword = true
+  }
+
+  const handleCheckDateOfBirth = (dateOfBirth?: Date) => {
+    // Check if date is undefined or invalid
+    if (!dateOfBirth || isNaN(dateOfBirth.getTime())) {
+      setErrorDateOfBirth("Ngày sinh không được bỏ trống")
+      checkDateOfBirth = false
+      return
+    }
+
+    // Check if user is at least 13 years old
+    const currentDate = new Date();
+    const minAgeDate = new Date(
+      currentDate.getFullYear() - 13,
+      currentDate.getMonth(),
+      currentDate.getDate()
+    );
+
+    if (dateOfBirth > minAgeDate) {
+      setErrorDateOfBirth("Bạn phải ít nhất 13 tuổi để đăng ký")
+      checkDateOfBirth = false
+      return
+    }
+
+    // Check if date is not in the future
+    if (dateOfBirth > currentDate) {
+      setErrorDateOfBirth("Ngày sinh không thể ở tương lai")
+      checkDateOfBirth = false
+      return
+    }
+
+    setErrorDateOfBirth("")
+    checkDateOfBirth = true
+  }
+  //gửi api
+    const handleLogin = async () => {
+      handleCheckEmail(email);
+      handleCheckPassword(password);
+      hanldelCheckConfirmPassword(confirmPassword);
+      handleCheckDateOfBirth(dateOfBirth);
+    
+      // Đợi các giá trị state được cập nhật
+      if (!checkEmail || !checkPassowrd || !checkConfirmPassword || !checkDateOfBirth) {
+        toast.error("Thông tin không hợp lệ")
+        return;
+      }
+    
+      const signInData: SignIn = {
+        email:email,
+        password:password,
+        dateOfBirth: dateOfBirth,
+      };
+    
+      try {
+        console.log(signInData);
+        
+        const response = await addUser(signInData);
+        console.log("kết quả đăng ký: ",response.message);
+        
+        toast.success("Đăng ký thành công")
+        // Reset form
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        setDateOfBirth(undefined); // Hoặc một giá trị mặc định
+      } catch (error) {
+        toast.error("Đăng ký thất bại")
+        console.error(error);
+      }
+    };
+  
 
   return (
     <div className="flex flex-col w-screen justify-center items-center">
@@ -74,14 +194,17 @@ function SignIn() {
           <img src="" alt="" />
         </div>
         <div className="font-bold text-4xl text-left p-2">Đăng ký</div>
-        <TextField onChange={handleUsename} type="text" label="Username" />
-        <TextField onChange={handleEmail} type="email" label="Email" />
-        <TextField onChange={handlePassword} type="password" label="Password" />
-        <TextField
+        <TextField name="email" id="email" value={email} onChange={handleEmail} type="email" label="Email" error={errorEmail} />
+        <TextField name="password" id="password" value={password} onChange={handlePassword} type="password" label="Password" error={errorPassword} />
+        <TextField name="confirmPassword"
+          id="confirmPassword"
+          value={confirmPassword}
           onChange={handleConfirmPassword}
           type="password"
           label="Confirm password"
+          error={errorConfirmPassword}
         />
+        <TextField name="birthDate" id="birthDate" value={dateOfBirth ? dateOfBirth.toISOString().substring(0, 10) : ""} onChange={handleDateOfBirth} type="date" label="Ngày sinh" className="pr-2" error={errorDataOfBirth} />
         <div className="p-2">
           <Button onClick={handleLogin} outline large primary>
             Đăng ký
@@ -91,7 +214,7 @@ function SignIn() {
           {logo.map((item, index) => (
             <Button
               key={index}
-              className="flex bg-white  "
+              className="flex bg-transparent"
               lefticon={<Image sizes="small" src={item.src} alt={item.name} />}
               small={true}
               flex={true}
@@ -101,6 +224,7 @@ function SignIn() {
           ))}
         </div>
       </div>
+      <Toaster position="top-right"/>
     </div>
   );
 }
