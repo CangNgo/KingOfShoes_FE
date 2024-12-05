@@ -119,7 +119,7 @@ function AddCategory() {
           {category.map((category) => (
             <tr key={category.id}>
               <td>{category.name}</td>
-              <td>{category.status}</td>
+              <td>{category.status==="ACTIVE"?"Đang bán":"Đã ngừng"}</td>
               <td>{category.description}</td>
             </tr>
           ))}

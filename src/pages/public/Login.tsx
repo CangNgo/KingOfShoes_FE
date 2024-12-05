@@ -68,7 +68,7 @@ function Login() {
         return
       }
   
-      if (password.length <= 8) {
+      if (password.length < 8) {
         setErrorPassword("Mật khẩu không được bé hơn 8 ")
         return
       }
