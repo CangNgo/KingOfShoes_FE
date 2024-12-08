@@ -23,6 +23,7 @@ interface BaseButtonProps
   background?: string;
   flex?: boolean;
   onClick?: () => void;
+  // onClickEven?:(e:) => void;
   marginIconNone?: boolean;
 }
 
@@ -54,10 +55,16 @@ const Button = React.forwardRef<
       onClick,
       flex,
       marginIconNone,
+      // onClickEven,
       ...passProps
     },
     ref
   ) => {
+
+    // if(onClickEven){
+    //   onclick = onClickEven
+    // }
+
     let Component: ComponentType = "button";
     const props: any = {
       onClick,

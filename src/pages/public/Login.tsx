@@ -95,7 +95,6 @@ function Login() {
     try {
       if(!checkEmail || !checkPassowrd) return
       const response = await axios.post(api, { email, password });
-      console.log(response);
       
       if (response.data.data.accessToken) {
         localStorage.setItem("auth_token", response.data.data.accessToken);
@@ -108,9 +107,9 @@ function Login() {
         }else if(response.data.data.role === "SUPPER_ADMIN"){
           navigate("/")
           window.location.href
+          toast.error("Không thể đăng nhập")
         }
       } else {
-        console.log("Đăng nhập thất bại");
       }
       toast.success("Đăng nhập thành công")
     } catch (error: unknown) {

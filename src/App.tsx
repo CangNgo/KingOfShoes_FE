@@ -18,7 +18,6 @@ function App() {
   const renderRoute = (route: RouteConfig) => {
     const Layout = route.layout || DefaultLayout;
     const Component = route.component;
-console.log(role);
 
     return (
       <Route
