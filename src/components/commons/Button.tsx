@@ -1,9 +1,15 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+// Define types for props
+interface BaseButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  to?: string;
   href?: string;
+  title?: string;
   primary?: boolean;
   outline?: boolean;
+  onlyicon?: boolean;
   text?: boolean;
   disable?: boolean;
   rounded?: boolean;
@@ -12,19 +18,30 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   large?: boolean;
   lefticon?: React.ReactNode;
   righticon?: React.ReactNode;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
+  background?: string;
+  flex?: boolean;
   onClick?: () => void;
+  // onClickEven?:(e:) => void;
+  marginIconNone?: boolean;
 }
 
-// Tạo kiểu cho AnchorButton
-const AnchorButton = React.forwardRef<HTMLAnchorElement, ButtonProps>(
+// Type for the component itself
+type ComponentType = "button" | "a" | typeof Link;
+
+const Button = React.forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  BaseButtonProps
+>(
   (
     {
-      className = "",
+      className,
+      to,
       href,
       primary = false,
       outline = false,
+      onlyicon = false,
       text = false,
       disable = false,
       rounded = false,
@@ -34,119 +51,78 @@ const AnchorButton = React.forwardRef<HTMLAnchorElement, ButtonProps>(
       children,
       lefticon,
       righticon,
+      background,
       onClick,
+      flex,
+      marginIconNone,
+      // onClickEven,
       ...passProps
     },
     ref
   ) => {
-    // Tạo className dựa trên props
-    const classes = [
-      "inline-flex items-center justify-center text-base font-bold min-w-[30px] px-4 py-2 border border-transparent",
-      !text && "bg-white",
-      disable && "pointer-events-none opacity-50",
-      rounded &&
-        "rounded-full shadow-sm border-[rgba(22,24,35,0.12)] hover:border-[rgba(22,24,35,0.2)] hover:bg-white",
-      primary && "bg-primary text-white hover:bg-primary/90",
-      outline &&
-        "text-primary border-current rounded-full hover:border-current hover:bg-primary/5",
-      textborder && "border-[#1618231f]",
-      text && "border-none hover:underline",
-      small && "min-w-[88px] py-1 px-4",
-      large && "py-3.5 px-4 min-w-[140px]",
-      className,
-    ]
-      .filter(Boolean)
-      .join(" ");
 
-    return (
-      <a
-        {...passProps}
-        href={href}
-        className={classes}
-        ref={ref}
-        onClick={disable ? undefined : onClick}
-      >
-        {lefticon && <span className="w-6 text-center">{lefticon}</span>}
-        <span className={`${lefticon || righticon ? "mx-2" : ""}`}>
-          {children}
-        </span>
-        {righticon && <span className="w-6 text-center">{righticon}</span>}
-      </a>
-    );
-  }
-);
+    // if(onClickEven){
+    //   onclick = onClickEven
+    // }
 
-// Tạo kiểu cho ButtonElement
-const ButtonElement = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className = "",
-      primary = false,
-      outline = false,
-      text = false,
-      disable = false,
-      rounded = false,
-      textborder = false,
-      small = false,
-      large = false,
-      children,
-      lefticon,
-      righticon,
+    let Component: ComponentType = "button";
+    const props: any = {
       onClick,
-      ...passProps
-    },
-    ref
-  ) => {
-    const classes = [
-      "inline-flex items-center justify-center text-base font-bold min-w-[30px] px-4 py-2 border border-transparent",
-      !text && "bg-white",
-      disable && "pointer-events-none opacity-50",
-      rounded &&
-        "rounded-full shadow-sm border-[rgba(22,24,35,0.12)] hover:border-[rgba(22,24,35,0.2)] hover:bg-white",
-      primary && "bg-primary text-white hover:bg-primary/90",
-      outline &&
-        "text-primary border-current rounded-full hover:border-current hover:bg-primary/5",
-      textborder && "border-[#1618231f]",
-      text && "border-none hover:underline",
-      small && "min-w-[88px] py-1 px-4",
-      large && "py-3.5 px-4 min-w-[140px]",
-      className,
-    ]
-      .filter(Boolean)
-      .join(" ");
+      ...passProps,
+    };
 
+    // Handle routing logic
+    if (to) {
+      props.to = to;
+      Component = Link;
+    } else if (href) {
+      props.href = href;
+      Component = "a";
+    }
+
+    // Handle disabled state
+    if (disable) {
+      Object.keys(props).forEach((key) => {
+        if (key.startsWith("on") && typeof props[key] === "function") {
+          delete props[key];
+        }
+      });
+      props.disabled = true; // Disable the button or link
+    }
+
+    // Build the className manually
+    let classes =
+    className + " border-none " 
+
+    // Conditional class application
+    if (primary) classes += " primary";
+    if (outline) classes += " outline outline-offset-2 outline-1";
+    if (onlyicon) classes += " onlyicon";
+    if (text) classes += " text";
+    if (disable) classes += " disable";
+    if (rounded) classes += " rounded";
+    if (textborder) classes += " textborder";
+    if (small) classes += " small";
+    if (large) classes += " w-full"; // Full width when large
+    if (background) classes += " bg-white";
+    if (flex) classes += " flex justify-center items-center";
+
+    props.className = classes;
     return (
-      <button
-        {...passProps}
-        className={classes}
-        ref={ref}
-        disabled={disable}
-        onClick={disable ? undefined : onClick}
-      >
-        {lefticon && <span className="w-6 text-center">{lefticon}</span>}
-        <span className={`${lefticon || righticon ? "mx-2" : ""}`}>
-          {children}
-        </span>
-        {righticon && <span className="w-6 text-center">{righticon}</span>}
-      </button>
+      <Component {...props} ref={ref}>
+        {lefticon && (
+          <span className={marginIconNone ? "m-0" : "mr-2"}>{lefticon}</span>
+        )}
+        <span>{children}</span>
+        {righticon && (
+          <span className={marginIconNone ? "m-0" : "ml-2"}>{righticon}</span>
+        )}
+      </Component>
     );
   }
 );
 
-// Component Button chính chọn biến thể phù hợp
-const Button = React.forwardRef<
-  HTMLButtonElement | HTMLAnchorElement,
-  ButtonProps
->((props, ref) => {
-  const { href } = props;
-  if (href) {
-    return (
-      <AnchorButton {...props} ref={ref as React.Ref<HTMLAnchorElement>} />
-    );
-  }
-  return <ButtonElement {...props} ref={ref as React.Ref<HTMLButtonElement>} />;
-});
-
+// Add display name for debugging purposes
 Button.displayName = "Button";
 
 export default Button;
